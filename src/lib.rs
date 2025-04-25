@@ -14,7 +14,7 @@ use core::fmt;
 const DEFAULT_ADDRESS: u8 = 0x76;
 
 /// BMP280 driver
-pub struct BMP280<I2C: ehal::blocking::i2c::WriteRead> {
+pub struct BMP280<I2C: embedded_hal::i2c::I2c> {
     com: I2C,
     addr: u8,
     // Temperature compensation
@@ -34,11 +34,11 @@ pub struct BMP280<I2C: ehal::blocking::i2c::WriteRead> {
     dig_p9: i16,
 }
 
-impl<I2C: ehal::blocking::i2c::WriteRead> BMP280<I2C> {
+impl<I2C: embedded_hal::i2c::I2c> BMP280<I2C> {
     /// Creates new BMP280 driver with the specified address
     pub fn new_with_address<E>(i2c: I2C, addr: u8) -> Result<BMP280<I2C>, E>
     where
-        I2C: ehal::blocking::i2c::WriteRead<Error = E>,
+        I2C: embedded_hal::i2c::I2c<Error = E>,
     {
         let mut chip = BMP280 {
             com: i2c,
@@ -68,13 +68,13 @@ impl<I2C: ehal::blocking::i2c::WriteRead> BMP280<I2C> {
     /// Create a new BMP280 driver with the default address
     pub fn new<E>(i2c: I2C) -> Result<BMP280<I2C>, E>
     where
-        I2C: ehal::blocking::i2c::WriteRead<Error = E>,
+        I2C: embedded_hal::i2c::I2c<Error = E>,
     {
         Self::new_with_address(i2c, DEFAULT_ADDRESS)
     }
 }
 
-impl<I2C: ehal::blocking::i2c::WriteRead> BMP280<I2C> {
+impl<I2C: embedded_hal::i2c::I2c> BMP280<I2C> {
     fn read_calibration(&mut self) {
         let mut data: [u8; 24] = [0; 24];
         let _ = self
